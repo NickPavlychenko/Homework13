@@ -7,7 +7,7 @@ public class ProductBasket {
     private int productCount;
 
     public ProductBasket() {
-        this.products = new Product[5];
+        this.products = new Product[10];
         this.productCount = 0;
     }
 
@@ -32,10 +32,20 @@ public class ProductBasket {
             System.out.println(" Корзина путсая ");
             return;
         }
+
+        int specialCount = 0;
+
         for (int i = 0; i < productCount; i++) {
-            System.out.println(products[i].getName() + ": " + products[i].getPrice());
+            Product product = products[i];
+            System.out.println(product.toString());
+
+            if (product.isSpecial()) {
+                specialCount++;
+            }
         }
+
         System.out.println("Итого: " + getTotalPrice());
+        System.out.println("Специальных товаров: " + specialCount);
     }
 
     public boolean containsProduct(String productName) {
