@@ -9,162 +9,105 @@ import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.product.SimpleProduct;
 import search.SearchEngine;
 import search.Searchable;
-
+import java.util.List;
 import java.util.Arrays;
+
 
 public class App {
     public static void main(String[] args) {
-
-        System.out.println();
-
-        System.out.println(" - Демонстрация проверки даныых -");
-        testDataValidation();
-
-        System.out.println();
-
-        System.out.println("  - Демонстрация основго функционала - ");
-        testMainFunctionality();
-
-        System.out.println();
-        System.out.println(" - Демонастрация собственнго исключения - ");
-        testCustomException();
+        System.out.println(" - Демонстрация обновленного функционала -");
+        testUpdatedFunctionality();
     }
 
-    private static void testDataValidation() {
-        System.out.println(" - Тест корректных данных - ");
-        try {
-            SimpleProduct validProduct = new SimpleProduct("Валидный товар", 1000);
-            System.out.println(" Корректный товар создан: " + validProduct.getName());
-        } catch (IllegalArgumentException e) {
-            System.out.println(" Неожиданная ошибка: " + e.getMessage());
-        }
+    private static void testUpdatedFunctionality() {
 
-        System.out.println(" - Тест некорректных данных - ");
-
-        try {
-            SimpleProduct emptyName = new SimpleProduct("   ", 1000);
-            System.out.println(" Ожидалась ошибка для пустого названия");
-        } catch (IllegalArgumentException e) {
-            System.out.println(" Правильно отловили: " + e.getMessage());
-        }
-
-        try {
-            SimpleProduct zeroPrice = new SimpleProduct("Товар", 0);
-            System.out.println(" Ожидалась ошибка для нулевой цены");
-        } catch (IllegalArgumentException e) {
-            System.out.println(" Правильно отловили: " + e.getMessage());
-        }
-
-        try {
-            DiscountedProduct negativeDiscount = new DiscountedProduct("Товар", 1000, -10);
-            System.out.println(" Ожидалась ошибка для отрицательной скидки");
-        } catch (IllegalArgumentException e) {
-            System.out.println(" Правильно отловили: " + e.getMessage());
-        }
-
-        try {
-            DiscountedProduct bigDiscount = new DiscountedProduct("Товар", 1000, 150);
-            System.out.println(" Ожидалась ошибка для слишком большой скидки");
-        } catch (IllegalArgumentException e) {
-            System.out.println(" Правильно отловили: " + e.getMessage());
-        }
-    }
-
-    private static void testMainFunctionality() {
-        SimpleProduct laptop = new SimpleProduct("Игровой ноутбук для геймеров", 50000);
-        SimpleProduct mouse = new SimpleProduct("Игровая мышь для игр", 5000);
-        DiscountedProduct keyboard = new DiscountedProduct("Механическая клавиатура для игр", 7000, 30);
-        Article article1 = new Article("Обзор игровых ноутбуков", "Лучшие игровые ноутбуки для геймеров 2025 года");
+        SimpleProduct laptop1 = new SimpleProduct("Игровой ноутбук", 50000);
+        SimpleProduct laptop2 = new SimpleProduct("Игровой ноутбук", 45000);
+        SimpleProduct mouse = new SimpleProduct("Игровая мышь", 5000);
+        DiscountedProduct keyboard = new DiscountedProduct("Механическая клавиатура", 7000, 30);
+        Article article1 = new Article("Обзор игровых ноутбуков", "Лучшие игровые ноутбуки 2025 года");
         Article article2 = new Article("Выбор игровой мыши", "Как выбрать игровую мышь для компьютерных игр");
 
-        SearchEngine searchEngine = new SearchEngine(10);
-        searchEngine.add(laptop);
+
+        System.out.println("\n - Демонстрацияя корзины со списком -");
+        ProductBasket basket = new ProductBasket();
+
+
+        basket.addProduct(laptop1);
+        basket.addProduct(laptop2);
+        basket.addProduct(mouse);
+        basket.addProduct(keyboard);
+
+        System.out.println("Корзина после добавления товаров:");
+        basket.printContents();
+
+
+        System.out.println("\n - Демонстрация удаление продукта по имени -");
+
+
+        System.out.println("1. Удаляем 'Игровой ноутбук':");
+        List<Product> removedProducts = basket.removeProductsByName("Игровой ноутбук");
+
+
+        System.out.println("2. Удаленные продукты:");
+        if (removedProducts.isEmpty()) {
+            System.out.println("Список пуст");
+        } else {
+            for (Product product : removedProducts) {
+                System.out.println("   - " + product.getName() + ": " + product.getPrice() + " руб.");
+            }
+        }
+
+
+        System.out.println("3. Корзина после удаления:");
+        basket.printContents();
+
+
+        System.out.println("4. Удаляем несуществующий продукт 'Планшет':");
+        List<Product> removedNonExistent = basket.removeProductsByName("Планшет");
+
+
+        System.out.println("5. Результат удаления несуществующего продукта:");
+        if (removedNonExistent.isEmpty()) {
+            System.out.println("   Список пуст");
+        } else {
+            for (Product product : removedNonExistent) {
+                System.out.println("   - " + product.getName());
+            }
+        }
+
+
+        System.out.println("6. Финальное содержимое корзины:");
+        basket.printContents();
+
+
+        System.out.println("\n - Демонстрация обновленного поиска -");
+        SearchEngine searchEngine = new SearchEngine();
+
+
+        searchEngine.add(laptop1);
         searchEngine.add(mouse);
         searchEngine.add(keyboard);
         searchEngine.add(article1);
         searchEngine.add(article2);
 
-        System.out.println(" - Обычный поиск - ");
+
         testSearch(searchEngine, "игр");
+        testSearch(searchEngine, "ноутбук");
+        testSearch(searchEngine, "мышь");
 
-        System.out.println();
-        System.out.println(" - Улучшенный поиск (наиболее подходящий) - ");
+
+        System.out.println("\n - Поиск наиболее подходящего -");
         testBestMatch(searchEngine, "игр");
-        testBestMatch(searchEngine, "ноутбук");
-        testBestMatch(searchEngine, "мышь");
-
-        System.out.println();
-        System.out.println(" - Демонстрация корзины - ");
-        ProductBasket basket = new ProductBasket();
-        basket.addProduct(laptop);
-        basket.addProduct(mouse);
-        basket.addProduct(keyboard);
-        basket.printContents();
-    }
-
-    private static void testCustomException() {
-        System.out.println(" - Тест пустого поискового движка - ");
-        SearchEngine emptyEngine = new SearchEngine(10);
-
-        try {
-            emptyEngine.findBestMatch("тест");
-            System.out.println(" Ожидалось исключение BestResultNotFoundException");
-        } catch (BestResultNotFoundException e) {
-            System.out.println(" Правильно поймали: " + e.getMessage());
-        }
-
-        System.out.println(" - Тест поиска без результатов - ");
-        SearchEngine engineWithData = new SearchEngine(10);
-        SimpleProduct laptop = new SimpleProduct("Игровой ноутбук", 50000);
-        SimpleProduct mouse = new SimpleProduct("Игровая мышь", 5000);
-        DiscountedProduct keyboard = new DiscountedProduct("Механическая клавиатура", 7000, 30);
-        Article article1 = new Article("Обзор игровых ноутбуков", "Лучшие игровые ноутбуки 2025 года");
-        Article article2 = new Article("Выбор игровой мыши", "Как выбрать игровую мышь");
-
-        engineWithData.add(laptop);
-        engineWithData.add(mouse);
-        engineWithData.add(keyboard);
-        engineWithData.add(article1);
-        engineWithData.add(article2);
-
-        try {
-            engineWithData.findBestMatch("абсолютнонесуществующееслово");
-            System.out.println(" Ожидалось исключение BestResultNotFoundException");
-        } catch (BestResultNotFoundException e) {
-            System.out.println(" Правильно поймали: " + e.getMessage());
-        }
-
-        System.out.println(" - Тест успешного поиска - ");
-        try {
-            Searchable result = engineWithData.findBestMatch("игр");
-            System.out.println(" Успешно нашли: " + result.getStringRepresentation());
-        } catch (BestResultNotFoundException e) {
-            System.out.println(" Неожиданная ошибка: " + e.getMessage());
-        }
-
-        System.out.println(" - Тест поиска по конкретному слову - ");
-        try {
-            Searchable result = engineWithData.findBestMatch("ноутбук");
-            System.out.println(" Наиболее релевантный для 'ноутбук': " + result.getStringRepresentation());
-        } catch (BestResultNotFoundException e) {
-            System.out.println(" Неожиданная ошибка: " + e.getMessage());
-        }
     }
 
     private static void testSearch(SearchEngine searchEngine, String query) {
-        System.out.println("Поиск: '" + query + "' ---");
-        Searchable[] results = searchEngine.search(query);
+        System.out.println("\n - Поиск: '" + query + "' - ");
+        List<Searchable> results = searchEngine.search(query);
 
-        int count = 0;
-        for (Searchable result : results) {
-            if (result != null) count++;
-        }
-
-        System.out.println("Найдено результатов: " + count);
-        for (int i = 0; i < results.length; i++) {
-            if (results[i] != null) {
-                System.out.println((i + 1) + ". " + results[i].getStringRepresentation());
-            }
+        System.out.println("Найдено результатов: " + results.size());
+        for (int i = 0; i < results.size(); i++) {
+            System.out.println((i + 1) + ". " + results.get(i).getStringRepresentation());
         }
     }
 
