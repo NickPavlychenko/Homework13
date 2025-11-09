@@ -1,7 +1,8 @@
 package search;
 
-public class SearchEngine {
+import org.skypro.skyshop.exception.BestResultNotFoundException;
 
+public class SearchEngine {
     private Searchable[] searchables;
     private int count;
 
@@ -15,22 +16,63 @@ public class SearchEngine {
             searchables[count] = searchable;
             count++;
         } else {
-            System.out.println("Поиск переполнен, невозможно добавить новый элемент");
+            System.out.println("Поисковый движок заполнен, невозможно добавить новый элемент");
         }
     }
 
     public Searchable[] search(String query) {
         Searchable[] results = new Searchable[5];
-        int resultCount = 0;
+        int resultsCount = 0;
 
-        for (int i = 0; i < count && resultCount < 5; i++) {
+        for (int i = 0; i < count && resultsCount < 5; i++) {
             Searchable item = searchables[i];
             if (item.getSearchTerm().toLowerCase().contains(query.toLowerCase())) {
-                results[resultCount] = item;
-                resultCount++;
+                results[resultsCount] = item;
+                resultsCount++;
             }
         }
 
         return results;
     }
+
+    public Searchable findBestMatch(String search) throws BestResultNotFoundException {
+        if (count == 0) {
+            throw new BestResultNotFoundException("Поисковый движок пуст. Нечего искать.");
+        }
+
+        Searchable bestMatch = null;
+        int maxOccurrences = 0;
+        String searchLower = search.toLowerCase();
+
+        for (int i = 0; i < count; i++) {
+            Searchable item = searchables[i];
+            String searchTerm = item.getSearchTerm().toLowerCase();
+
+            int occurrences = countOccurrences(searchTerm, searchLower);
+
+            if (occurrences > maxOccurrences) {
+                maxOccurrences = occurrences;
+                bestMatch = item;
+            }
+        }
+
+        if (bestMatch == null) {
+            throw new BestResultNotFoundException("Не найдено подходящих результатов для: '" + search + "'");
+        }
+
+        return bestMatch;
+    }
+
+    private int countOccurrences(String text, String search) {
+        int count = 0;
+        int index = 0;
+
+        while ((index = text.indexOf(search, index)) != -1) {
+            count++;
+            index += search.length();
+        }
+
+        return count;
+    }
 }
+
