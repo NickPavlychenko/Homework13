@@ -2,41 +2,35 @@ package search;
 
 import org.skypro.skyshop.exception.BestResultNotFoundException;
 
-public class SearchEngine {
-    private Searchable[] searchables;
-    private int count;
+import java.util.ArrayList;
+import java.util.List;
 
-    public SearchEngine(int capacity) {
-        this.searchables = new Searchable[capacity];
-        this.count = 0;
+public class SearchEngine {
+    private List<Searchable> searchables;
+
+    public SearchEngine() {
+        this.searchables = new ArrayList<>(); // Динамический список
     }
 
     public void add(Searchable searchable) {
-        if (count < searchables.length) {
-            searchables[count] = searchable;
-            count++;
-        } else {
-            System.out.println("Поисковый движок заполнен, невозможно добавить новый элемент");
-        }
+        searchables.add(searchable); // Просто добавляем - размер не ограничен
     }
 
-    public Searchable[] search(String query) {
-        Searchable[] results = new Searchable[5];
-        int resultsCount = 0;
+    // ОБНОВЛЁННЫЙ МЕТОД: возвращает все подходящие результаты
+    public List<Searchable> search(String query) {
+        List<Searchable> results = new ArrayList<>();
 
-        for (int i = 0; i < count && resultsCount < 5; i++) {
-            Searchable item = searchables[i];
+        for (Searchable item : searchables) {
             if (item.getSearchTerm().toLowerCase().contains(query.toLowerCase())) {
-                results[resultsCount] = item;
-                resultsCount++;
+                results.add(item);
             }
         }
 
-        return results;
+        return results; // Возвращаем все найденные результаты
     }
 
     public Searchable findBestMatch(String search) throws BestResultNotFoundException {
-        if (count == 0) {
+        if (searchables.isEmpty()) {
             throw new BestResultNotFoundException("Поисковый движок пуст. Нечего искать.");
         }
 
@@ -44,8 +38,7 @@ public class SearchEngine {
         int maxOccurrences = 0;
         String searchLower = search.toLowerCase();
 
-        for (int i = 0; i < count; i++) {
-            Searchable item = searchables[i];
+        for (Searchable item : searchables) {
             String searchTerm = item.getSearchTerm().toLowerCase();
 
             int occurrences = countOccurrences(searchTerm, searchLower);
@@ -75,4 +68,5 @@ public class SearchEngine {
         return count;
     }
 }
+
 
