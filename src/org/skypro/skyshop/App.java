@@ -4,14 +4,13 @@ import content.Article;
 import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.exception.BestResultNotFoundException;
 import org.skypro.skyshop.product.DiscountedProduct;
-import org.skypro.skyshop.product.FixPriceProduct;
 import org.skypro.skyshop.product.Product;
 import org.skypro.skyshop.product.SimpleProduct;
-import search.SearchEngine;
-import search.Searchable;
+import org.skypro.skyshop.search.SearchEngine;
+import org.skypro.skyshop.search.Searchable;
 import java.util.List;
-import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 
 
 public class App {
@@ -104,13 +103,13 @@ public class App {
 
     private static void testSearch(SearchEngine searchEngine, String query) {
         System.out.println("\n - Поиск: '" + query + "' - ");
-        Map<String, Searchable> results = searchEngine.search(query);;
+        Set<Searchable> results = searchEngine.search(query);;
 
         System.out.println("Найдено результатов: " + results.size());
 
         int index = 1;
-        for (Map.Entry<String, Searchable> entry : results.entrySet()) {
-            System.out.println(index + ". " + entry.getValue().getStringRepresentation());
+        for (Searchable item : results) {
+            System.out.println(index + ". " + item.getStringRepresentation());
             index++;
         }
     }
