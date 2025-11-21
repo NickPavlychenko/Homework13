@@ -4,29 +4,29 @@ import org.skypro.skyshop.exception.BestResultNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class SearchEngine {
     private List<Searchable> searchables;
 
     public SearchEngine() {
-        this.searchables = new ArrayList<>(); // Динамический список
+        this.searchables = new ArrayList<>();
     }
 
     public void add(Searchable searchable) {
-        searchables.add(searchable); // Просто добавляем - размер не ограничен
+        searchables.add(searchable);
     }
 
-    // ОБНОВЛЁННЫЙ МЕТОД: возвращает все подходящие результаты
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new ArrayList<>();
+    public Map<String, Searchable> search(String query) {
+        Map<String, Searchable> results = new TreeMap<>();
 
         for (Searchable item : searchables) {
             if (item.getSearchTerm().toLowerCase().contains(query.toLowerCase())) {
-                results.add(item);
+                results.put(item.getSearchTerm(), item);
             }
         }
-
-        return results; // Возвращаем все найденные результаты
+        return results;
     }
 
     public Searchable findBestMatch(String search) throws BestResultNotFoundException {

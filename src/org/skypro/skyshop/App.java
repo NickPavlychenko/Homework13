@@ -11,6 +11,7 @@ import search.SearchEngine;
 import search.Searchable;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Map;
 
 
 public class App {
@@ -45,11 +46,11 @@ public class App {
         System.out.println("\n - Демонстрация удаление продукта по имени -");
 
 
-        System.out.println("1. Удаляем 'Игровой ноутбук':");
+        System.out.println("1) Удаляем 'Игровой ноутбук':");
         List<Product> removedProducts = basket.removeProductsByName("Игровой ноутбук");
 
 
-        System.out.println("2. Удаленные продукты:");
+        System.out.println("2) Удаленные продукты:");
         if (removedProducts.isEmpty()) {
             System.out.println("Список пуст");
         } else {
@@ -59,15 +60,15 @@ public class App {
         }
 
 
-        System.out.println("3. Корзина после удаления:");
+        System.out.println("3) Корзина после удаления:");
         basket.printContents();
 
 
-        System.out.println("4. Удаляем несуществующий продукт 'Планшет':");
+        System.out.println("4) Удаляем несуществующий продукт 'Планшет':");
         List<Product> removedNonExistent = basket.removeProductsByName("Планшет");
 
 
-        System.out.println("5. Результат удаления несуществующего продукта:");
+        System.out.println("5) Результат удаления несуществующего продукта:");
         if (removedNonExistent.isEmpty()) {
             System.out.println("   Список пуст");
         } else {
@@ -77,7 +78,7 @@ public class App {
         }
 
 
-        System.out.println("6. Финальное содержимое корзины:");
+        System.out.println("6) Финальное содержимое корзины:");
         basket.printContents();
 
 
@@ -103,11 +104,14 @@ public class App {
 
     private static void testSearch(SearchEngine searchEngine, String query) {
         System.out.println("\n - Поиск: '" + query + "' - ");
-        List<Searchable> results = searchEngine.search(query);
+        Map<String, Searchable> results = searchEngine.search(query);;
 
         System.out.println("Найдено результатов: " + results.size());
-        for (int i = 0; i < results.size(); i++) {
-            System.out.println((i + 1) + ". " + results.get(i).getStringRepresentation());
+
+        int index = 1;
+        for (Map.Entry<String, Searchable> entry : results.entrySet()) {
+            System.out.println(index + ". " + entry.getValue().getStringRepresentation());
+            index++;
         }
     }
 
