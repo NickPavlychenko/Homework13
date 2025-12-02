@@ -3,6 +3,9 @@ package org.skypro.skyshop.basket;
 import org.skypro.skyshop.product.Product;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class ProductBasket {
     private Map<String, List<Product>> productsMap;
@@ -17,14 +20,11 @@ public class ProductBasket {
     }
 
     public int getTotalPrice() {
-        int total = 0;
-        for (List<Product> productList : productsMap.values()) {
-            for (Product product : productList) {
-                total += product.getPrice();
+        return productsMap.values().stream()
+                .flatMap(Collection::stream)
+                .mapToInt(Product::getPrice)
+                .sum();
             }
-        }
-        return total;
-    }
 
     public void printContents() {
         if (productsMap.isEmpty()) {
@@ -32,22 +32,22 @@ public class ProductBasket {
             return;
         }
 
-        int specialCount = 0;
-        int index = 1;
-
-        for (List<Product> productList : productsMap.values()) {
-            for (Product product : productList) {
-                System.out.println(index + ". " + product.toString());
-
-                if (product.isSpecial()) {
-                    specialCount++;
-                }
-                index++;
-            }
-        }
+        AtomicInteger index = new AtomicInteger(1);
+        productsMap.values().stream()
+                .flatMap(Collection::stream)
+                .forEach(product -> {
+                    System.out.println(index.getAndIncrement() + ". " + product.toString());
+                });
 
         System.out.println("Итого: " + getTotalPrice());
-        System.out.println("Специальных товаров: " + specialCount);
+        System.out.println("Специальных товаров: " + getSpecialCount());
+    }
+
+    private long getSpecialCount() {
+        return productsMap.values().stream()
+                .flatMap(Collection::stream)
+                .filter(Product::isSpecial)
+                .count();
     }
 
     public boolean containsProduct(String productName) {
@@ -72,10 +72,8 @@ public class ProductBasket {
     }
 
     public int getProductCount() {
-        int totalCount = 0;
-        for (List<Product> productList : productsMap.values()) {
-            totalCount += productList.size();
-        }
-        return totalCount;
+        return productsMap.values().stream()
+                .mapToInt(List::size)
+                .sum();
     }
 }
